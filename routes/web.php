@@ -12,5 +12,28 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('frontend.index');
+})->name('homepage');
+
+Route::get('about', function(){
+    return view('frontend.about');
+})->name('about');
+
+Route::get('products', function(){
+    return view('frontend.products');
+})->name('products');
+
+Route::get('store', function(){
+    return view('frontend.store');
+})->name('store');
+
+
+Route::get('user/profile', 'UserController@showProfile'); 
+
+Route::prefix('admin')->group(function ()
+{
+    Route::get('users', function ()
+    {
+        //所以網址要是/admin/users才會進來這裡
+    });
 });
