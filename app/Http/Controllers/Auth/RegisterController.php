@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use App\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+// use App\Providers\RouteServiceProvider;
+// use Illuminate\Foundation\Auth\RegistersUsers;
+use Hash;
+use Validator;
+use Mail;
+use App\Models\Customer;
+
 
 class RegisterController extends Controller
 {
@@ -22,14 +24,14 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    // use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    // protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -41,33 +43,88 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+
+    public function registerPage(){
+        $binding = [
+            'title' => '註冊',
+        ];
+        return view('frontend.auth.register', $binding);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+    public function registerProcess(){
+        //接收輸入資料
+        $input = request()->all();
+        
+        //驗證規則
+        $rules = [
+            //暱稱
+            'nickname' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+            //E-mail
+            'email' => [
+                'required',
+                'string',
+                'max:150',
+                'email',
+            ],
+            //帳號
+            'account' => [
+                'required',
+                'min:3',
+            ],
+            //密碼
+            'password' => [
+                'required',
+                'same:password_confirmation',
+                'min:3',
+            ],
+            //密碼驗證
+            'password_confirmation' => [
+                'required',
+                'min:3'
+            ]
+        ];
+
+        //驗證資料
+        $validator = Validator::make($input, $rules);
+
+        if($validator->fails()){
+            //資料驗證錯誤
+            return redirect( route('registerPage') )
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        //密碼加密
+        $input['password'] = Hash::make($input['password']);
+        $input['password_confirmation'] = '';
+
+        //新增會員資料
+        $Users = Customer::create($input);
+
+        /*先不做
+        //寄送註冊通知信
+        $mail_binding = [
+            'nickname' => $input['nickname']
+        ];
+
+        // 第一個參數為信件模板，第二個參數為傳入模板的變數，第三個參數為email寄送相關資訊，如寄件人 收件人 主旨等。
+        Mail::send('components.emailFormat', $mail_binding,
+        function($mail) use ($input){
+            //收件人
+            $mail->to($input['email']);
+            //寄件人
+            $mail->from('medo972283@gmail.com');
+            //郵件主旨
+            $mail->subject('恭喜註冊 E-commerce Shop Laravel 成功!');
+        });
+        */
+
+        //重新導向到登入頁
+        return redirect( route('loginPage') );
+
     }
 }

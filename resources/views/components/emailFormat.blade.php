@@ -1,0 +1,1 @@
+<h1> 歡迎 {{ $nickname }} 成功註冊 E-Commerce Shop Laravel</h1>
