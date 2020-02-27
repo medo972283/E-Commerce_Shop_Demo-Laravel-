@@ -10,15 +10,15 @@
     <h1>{{ $title }}</h1>
 
     <!-- 錯誤訊息模板元件 -->
-    {{-- @include('components.validationErrorMessage') --}}
+    @include('components.validationErrorMessage')
 
     <form action="{{ route('doLogin') }}" method="post">
         <!-- 手動加入 csrf_token 隱藏欄位，欄位變數名稱為 _token -->
         <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
 
         <label>
-            E-mail:
-            <input type="text" name="email" placeholder="Email" value="{{ old('email') }}"/>
+            帳號:
+            <input type="text" name="account" placeholder="帳號" value="{{ old('account') }}"/>
         </label>
 
         <label>

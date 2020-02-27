@@ -18,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    {{-- <link rel="stylesheet" href="{{asset('css/business-casual.min.css')}}"> --}}
     <link rel="stylesheet" href="{{asset('css/e-commerce.css')}}">
 </head>
 
