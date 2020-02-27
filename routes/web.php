@@ -11,9 +11,9 @@
 |
 */
 
-//使用者
+// 使用者
 Route::group(['prefix' => 'user'], function(){
-    //使用者驗證
+    // 使用者驗證相關
     Route::group(['prefix' => 'auth'], function(){
         // 註冊頁面
         Route::get('/register', 'Auth\RegisterController@registerPage')->name('registerPage');
@@ -26,20 +26,31 @@ Route::group(['prefix' => 'user'], function(){
 });
 
 // 首頁
-Route::get('/', function () {
-    return view('frontend.index');
-})->name('homepage');
+Route::get('/', 'HomepageController@listHomepage')->name('homepage');
 
-// 暫放頁
-Route::get('about', function(){
-    return view('frontend.about');
-})->name('about');
+// 商品頁面
+Route::group(['prefix' => 'merchandise'], function(){
+    //商品清單檢視
+    Route::get('/', 'MerchandiseController@merchandiseListPage')->name('listMerchandise');
+    //商品資料新增
+    Route::get('/create', 'MerchandiseController@merchandiseCreateProcess')->name('createMerchandise');
+    //商品管理清單檢視
+    Route::get('/manage', 'MerchandiseController@merchandiseManageListPage')->name('manageMerchandise');
+    //指定商品
+    Route::group(['prefix' => '{merchandise_id}'], function(){
+        //商品單品檢視
+        Route::get('/', 'MerchandiseController@merchandiseItemPage');
+        //商品單品編輯頁面檢視
+        Route::get('/edit', 'MerchandiseController@merchandiseItemEditPage');
+        //商品單品資料修改
+        Route::put('/', 'MerchandiseController@merchandiseItemUpdateProcess');
+        //購買商品
+        Route::post('/buy', 'MerchandiseController@merchandiseItemBuyProcess');
+    });
+});
 
-Route::get('products', function(){
-    return view('frontend.products');
-})->name('products');
+//交易
+Route::get('/transaction', 'TransactionController@transactionListPage');
 
-Route::get('store', function(){
-    return view('frontend.store');
-})->name('store');
+
 
